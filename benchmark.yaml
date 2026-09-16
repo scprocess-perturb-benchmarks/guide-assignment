@@ -30,7 +30,7 @@ stages:
         software_environment: assignment_py
         repository:
           url: https://github.com/tmp-perturb/guide-assignment-data.git
-          commit: 92ee17693aedbc44637360ff72d86ad45ce096d0
+          commit: 950362e0ebb4f67509eab8e12e4d82932b4ef01e
         parameters:
           - mex_dir: "/data/yunzliu/results/guide_extraction/hash_matcher_final/merged/"
             reference: "/data/yunzliu/references/published/K562_essential_raw_singlecell_01.h5ad"
@@ -47,7 +47,7 @@ stages:
         software_environment: assignment_py
         repository:
           url: https://github.com/tmp-perturb/guide-assignment-data.git
-          commit: 92ee17693aedbc44637360ff72d86ad45ce096d0
+          commit: 950362e0ebb4f67509eab8e12e4d82932b4ef01e
         parameters:
           - mex_dir: "/data/yunzliu/assignment_benchmark_starter/04_extraction_mex/simpleaf_k15/"
             reference: "/data/yunzliu/references/published/K562_essential_raw_singlecell_01.h5ad"
@@ -59,6 +59,44 @@ stages:
             collapse_lanes: "false"
             perturbation_type: "knockdown"
             knockdown_applicable: "true"
+            reference_schema: "replogle_dual"
+      - id: papalexi_simpleaf
+        name: "Papalexi 2021 / simpleaf (supplementary)"
+        software_environment: assignment_py
+        repository:
+          url: https://github.com/tmp-perturb/guide-assignment-data.git
+          commit: 950362e0ebb4f67509eab8e12e4d82932b4ef01e
+        parameters:
+          - mex_dir: "/data/yunzliu/results/guide_extraction/papalexi_2021/simpleaf/merged/"
+            reference: "/data/yunzliu/papalexi_2021_benchmark/01_reference/papalexi_2021_assignment.csv"
+            gex: "/data/yunzliu/papalexi_2021_benchmark/01_reference/papalexi_2021_rna.h5ad"
+            guide_map: "/data/yunzliu/papalexi_2021_benchmark/01_reference/papalexi_2021_t2g_guide_level.tsv"
+            guide_design: "single"
+            match_regime: "bare_16mer"
+            collapse_lanes: "true"
+            perturbation_type: "none"
+            knockdown_applicable: "false"
+            reference_schema: "papalexi_single"
+      - id: norman_simpleaf
+        name: "Norman 2019 / simpleaf (supplementary)"
+        software_environment: assignment_py
+        repository:
+          url: https://github.com/tmp-perturb/guide-assignment-data.git
+          commit: 950362e0ebb4f67509eab8e12e4d82932b4ef01e
+        parameters:
+          - mex_dir: "/data/yunzliu/norman_2019/extraction/simpleaf/merged/"
+            reference: "/data/yunzliu/norman_2019/expression_matrix/geo/GSE133344_filtered_cell_identities.csv.gz"
+            gex: "/data/yunzliu/norman_2019/expression_matrix/pertpy/norman_2019_pertpy.h5ad"
+            gex_matrix: "/data/yunzliu/norman_2019/expression_matrix/geo/GSE133344_filtered_matrix.mtx.gz"
+            gex_barcodes: "/data/yunzliu/norman_2019/expression_matrix/geo/GSE133344_filtered_barcodes.tsv.gz"
+            gex_features: "/data/yunzliu/norman_2019/expression_matrix/geo/GSE133344_filtered_genes.tsv.gz"
+            guide_map: "/data/yunzliu/norman_2019/extraction/ref/gbc_t2g.tsv"
+            guide_design: "dual"
+            match_regime: "lane_16mer"
+            collapse_lanes: "false"
+            perturbation_type: "activation"
+            knockdown_applicable: "true"
+            reference_schema: "norman_construct"
     outputs:
       - { id: data.matrix,    path: "{dataset}_matrix.mtx.gz" }
       - { id: data.barcodes,  path: "{dataset}_barcodes.tsv.gz" }
@@ -68,6 +106,7 @@ stages:
       - { id: data.guide_map, path: "{dataset}_guide_map.csv" }
       - { id: data.gene_symbol_to_ensg, path: "{dataset}_gene_symbol_to_ensg.json" }
       - { id: data.spec,      path: "{dataset}_spec.json" }
+      - { id: data.gex_manifest, path: "{dataset}_gex_manifest.json" }
       - { id: data.difficulty_table, path: "{dataset}_cell_difficulty.tsv" }
 
   # ======================= guide_assignment =======================
@@ -135,7 +174,7 @@ stages:
         software_environment: assignment_py
         repository:
           url: https://github.com/tmp-perturb/guide-assignment-metrics.git
-          commit: 4f6edc35c17a1780b5118b0a2f33f5135de6e8b1
+          commit: 767ccc5d356593b8caed840e6e780bcc5f30fb4b
         parameters:
           - metric: ["reference_agreement", "stratified_reference_agreement"]
     inputs:
@@ -144,6 +183,7 @@ stages:
       - data.guide_map
       - data.spec
       - data.difficulty_table
+      - data.gex_manifest
     outputs:
       - { id: metrics_reference.scores, path: "{params.metric}.scores.json" }
 
@@ -154,7 +194,7 @@ stages:
         software_environment: assignment_metrics
         repository:
           url: https://github.com/tmp-perturb/guide-assignment-metrics.git
-          commit: 4f6edc35c17a1780b5118b0a2f33f5135de6e8b1
+          commit: 767ccc5d356593b8caed840e6e780bcc5f30fb4b
         parameters:
           - metric: ["knockdown", "stratified_knockdown"]
     inputs:
@@ -164,6 +204,7 @@ stages:
       - data.spec
       - data.gex
       - data.difficulty_table
+      - data.gex_manifest
     outputs:
       - { id: metrics_gex.scores, path: "{params.metric}.scores.json" }
 
@@ -174,7 +215,7 @@ stages:
         software_environment: assignment_metrics
         repository:
           url: https://github.com/tmp-perturb/guide-assignment-metrics.git
-          commit: 4f6edc35c17a1780b5118b0a2f33f5135de6e8b1
+          commit: 767ccc5d356593b8caed840e6e780bcc5f30fb4b
         parameters:
           - metric: ["differential_expression_discovery"]
         resources: { mem_mb: 180000, cpu: 8 }
@@ -184,6 +225,7 @@ stages:
       - data.guide_map
       - data.spec
       - data.gex
+      - data.gex_manifest
     outputs:
       - { id: metrics_discovery.scores, path: "{params.metric}.scores.json" }
 
@@ -194,7 +236,7 @@ stages:
         software_environment: assignment_py
         repository:
           url: https://github.com/tmp-perturb/guide-assignment-metrics.git
-          commit: 4f6edc35c17a1780b5118b0a2f33f5135de6e8b1
+          commit: 767ccc5d356593b8caed840e6e780bcc5f30fb4b
         parameters:
           - metric: "method_resources"
     inputs:
@@ -213,7 +255,7 @@ stages:
         software_environment: assignment_py
         repository:
           url: https://github.com/tmp-perturb/guide-assignment-metrics.git
-          commit: 4f6edc35c17a1780b5118b0a2f33f5135de6e8b1
+          commit: 767ccc5d356593b8caed840e6e780bcc5f30fb4b
         parameters:
           - metric: "construct_set_agreement"
     inputs:
@@ -237,7 +279,7 @@ metric_collectors:
     software_environment: assignment_metrics
     repository:
       url: https://github.com/tmp-perturb/guide-assignment-metrics.git
-      commit: 4f6edc35c17a1780b5118b0a2f33f5135de6e8b1
+      commit: 767ccc5d356593b8caed840e6e780bcc5f30fb4b
       entrypoint: collectors
     parameters:
       - id: collector_param
@@ -250,7 +292,7 @@ metric_collectors:
     software_environment: assignment_metrics
     repository:
       url: https://github.com/tmp-perturb/guide-assignment-metrics.git
-      commit: 4f6edc35c17a1780b5118b0a2f33f5135de6e8b1
+      commit: 767ccc5d356593b8caed840e6e780bcc5f30fb4b
       entrypoint: aggregate
     inputs:
       - metrics_reference.scores
