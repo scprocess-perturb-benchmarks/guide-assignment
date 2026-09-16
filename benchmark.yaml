@@ -1,6 +1,6 @@
 id: guide_assignment
-description: "Guide assignment benchmark: data -> 8 methods -> Tier-1/2/3 metrics + difficulty + collectors. Replogle {ham,simpleaf} x 8 methods; all metric logic parity-verified vs archive (see CONSISTENCY_VALIDATION.md)."
-version: "0.1.0"
+description: "Guide assignment benchmark: seven assignment configurations evaluated against published reference labels, with main and supplementary methodology-defined metrics."
+version: "0.2.0"
 benchmarker: "Yunzhe Liu, richelieu.xmas@gmail.com"
 
 software_backend: conda
@@ -20,8 +20,9 @@ software_environments:
 
 stages:
   # ============================ data ============================
-  # Runnable core: two Replogle extractions (dual-guide). Each stages the MEX trio
-  # + GT + GEX + guide map + a spec.json carrying dataset semantics.
+  # Primary benchmark: Replogle K562, two guide extractions.  The reference-label
+  # terminology is intentional: it describes agreement with a published reference,
+  # rather than claiming experimental ground truth.
   - id: data
     modules:
       - id: replogle_ham
@@ -29,42 +30,40 @@ stages:
         software_environment: assignment_py
         repository:
           url: https://github.com/tmp-perturb/guide-assignment-data.git
-          commit: 94d395085aed858d98386bcb39d1f16dad5dbeb7
+          commit: 92ee17693aedbc44637360ff72d86ad45ce096d0
         parameters:
           - mex_dir: "/data/yunzliu/results/guide_extraction/hash_matcher_final/merged/"
-            gt: "/data/yunzliu/references/published/K562_essential_raw_singlecell_01.h5ad"
+            reference: "/data/yunzliu/references/published/K562_essential_raw_singlecell_01.h5ad"
             gex: "/data/yunzliu/Replogle2022_K562_Day6_benchmark/02_gex/post_decontx/TruSeq_decontx_merged_48lanes.h5ad"
             guide_map: "/data/yunzliu/references/raw_guides_k562_essential.csv"
             gene_symbol_to_ensg: "/data/yunzliu/assignment_benchmark_starter/benchmark_output/gene_symbol_to_ensg.json"
             guide_design: "dual"
             match_regime: "lane_16mer"
             collapse_lanes: "false"
+            perturbation_type: "knockdown"
+            knockdown_applicable: "true"
       - id: replogle_simpleaf
         name: "Replogle K562 / simpleaf_k15"
         software_environment: assignment_py
         repository:
           url: https://github.com/tmp-perturb/guide-assignment-data.git
-          commit: 94d395085aed858d98386bcb39d1f16dad5dbeb7
+          commit: 92ee17693aedbc44637360ff72d86ad45ce096d0
         parameters:
           - mex_dir: "/data/yunzliu/assignment_benchmark_starter/04_extraction_mex/simpleaf_k15/"
-            gt: "/data/yunzliu/references/published/K562_essential_raw_singlecell_01.h5ad"
+            reference: "/data/yunzliu/references/published/K562_essential_raw_singlecell_01.h5ad"
             gex: "/data/yunzliu/Replogle2022_K562_Day6_benchmark/02_gex/post_decontx/TruSeq_decontx_merged_48lanes.h5ad"
             guide_map: "/data/yunzliu/references/raw_guides_k562_essential.csv"
             gene_symbol_to_ensg: "/data/yunzliu/assignment_benchmark_starter/benchmark_output/gene_symbol_to_ensg.json"
             guide_design: "dual"
             match_regime: "lane_16mer"
             collapse_lanes: "false"
-    # ---- Papalexi lineages (Cut 3): single-guide, bare-16mer, pools collapsed to L01.
-    #      GT is a CSV (not h5ad) and Tier-1(single) needs benchmark_papalexi_tier1.py
-    #      wired into the metrics module — see plan §5.6. Sketch:
-    #   - id: papalexi_ham    ... mex_dir: /data/yunzliu/results/guide_extraction/papalexi_2021/ham/merged/
-    #                             guide_design: single  match_regime: bare_16mer  collapse_lanes: true
-    #   - id: papalexi_simpleaf ...
+            perturbation_type: "knockdown"
+            knockdown_applicable: "true"
     outputs:
       - { id: data.matrix,    path: "{dataset}_matrix.mtx.gz" }
       - { id: data.barcodes,  path: "{dataset}_barcodes.tsv.gz" }
       - { id: data.features,  path: "{dataset}_features.tsv.gz" }
-      - { id: data.gt_labels, path: "{dataset}_gt.h5ad" }
+      - { id: data.reference_labels, path: "{dataset}_reference.h5ad" }
       - { id: data.gex,       path: "{dataset}_gex.h5ad" }
       - { id: data.guide_map, path: "{dataset}_guide_map.csv" }
       - { id: data.gene_symbol_to_ensg, path: "{dataset}_gene_symbol_to_ensg.json" }
@@ -72,43 +71,46 @@ stages:
       - { id: data.difficulty_table, path: "{dataset}_cell_difficulty.tsv" }
 
   # ======================= guide_assignment =======================
-  # 8 lineages/(dataset): pgmm{mle,map_e2}, umi{3,5,10}, crispat{pgmm,2beta}, fishash.
+  # Seven configurations/(dataset): MAP-EM PGMM, UMI{3,5,10}, crispat{pgmm,2beta}, fishash.
   # All consume the MEX trio; all emit a base-column assignments.csv.
   - id: guide_assignment
     modules:
       - id: pgmm
-        name: "PGMM EM (mle / map_e2)"
+        name: "PGMM_EM (MAP-EM)"
         software_environment: assignment_py
         repository:
           url: https://github.com/tmp-perturb/guide-assignment-pgmm.git
-          commit: 56f6b0a0eb485caccca3d0b23f2c4a047e52ddb4
+          commit: be85a69a1082b143dba2f810109716fd2da5d9d1
         parameters:
-          - variant: ["mle", "map_e2"]
+          - variant: "map_e2"
             umi_threshold: 1
             prob_threshold: 0.75
+            workers: 8
       - id: umi
         name: "UMI threshold (t3/t5/t10)"
         software_environment: assignment_py
         repository:
           url: https://github.com/tmp-perturb/guide-assignment-umi.git
-          commit: c75793d3d448dbe4149b58bd502fba66cb311757
+          commit: ac6a2a84d73cf9295e9d8822fd36549f959d9bc7
         parameters:
           - threshold: [3, 5, 10]
+            workers: 8
       - id: crispat
         name: "crispat (pgmm / 2beta)"
         software_environment: assignment_crispat
         repository:
           url: https://github.com/tmp-perturb/guide-assignment-crispat.git
-          commit: ca52e49e59d894b0aa3113bc99f8238aaba29def
+          commit: 6eb4c6ba5ffef4835666ae7056685af3d46cd300
         parameters:
           - crispat_method: ["pgmm", "2beta"]
             umi_threshold: 0
+            workers: 8
       - id: fishash
         name: "fishash (R)"
         software_environment: assignment_fishash
         repository:
           url: https://github.com/tmp-perturb/guide-assignment-fishash.git
-          commit: 02a8cb1c436718a9416ab33f1040053da91c9fd1
+          commit: e92fcff0699e4b84e0c133714ef632e75e0b4afa
         parameters:
           - padj_cutoff: 0.05
             min_count: 2
@@ -119,44 +121,45 @@ stages:
       - data.features
     outputs:
       - { id: guide_assignment.assignments, path: "assignments.csv" }
+      - { id: guide_assignment.monitoring, path: "monitoring.json" }
 
   # ---- metrics: per-lineage scores; metric selection via --metric.
   # NOTE: each metric group is its OWN single-module stage. OB 0.6.0's DAG builder
   # is nondeterministic when one stage holds multiple modules sharing an output id
   # (fan-out over lineages silently collapses ~half the time); one module per stage
   # makes fan-out deterministic. Verified stable across runs incl. PYTHONHASHSEED=0.
-  - id: metrics_gt
+  - id: metrics_reference
     modules:
       - id: gt_metrics
-        name: "GT + stratified metrics (no GEX)"
+        name: "Reference agreement and difficulty-stratified agreement"
         software_environment: assignment_py
         repository:
           url: https://github.com/tmp-perturb/guide-assignment-metrics.git
-          commit: e5131d6c85f832e400fdb6f98d630dc26ce8956e
+          commit: 59a0e1116be72929db10744e2c989db46db95c8e
         parameters:
-          - metric: ["tier1", "construct_set", "strat_tier1", "strat_mismatch_loc", "capacity"]
+          - metric: ["reference_agreement", "stratified_reference_agreement"]
     inputs:
       - guide_assignment.assignments
-      - data.gt_labels
+      - data.reference_labels
       - data.guide_map
       - data.spec
       - data.difficulty_table
     outputs:
-      - { id: metrics_gt.scores, path: "{params.metric}.scores.json" }
+      - { id: metrics_reference.scores, path: "{params.metric}.scores.json" }
 
   - id: metrics_gex
     modules:
       - id: gex_metrics
-        name: "GEX metrics: KD (+NT-NT +pair) + stratum delta-KD"
+        name: "Knockdown and difficulty-stratified knockdown"
         software_environment: assignment_metrics
         repository:
           url: https://github.com/tmp-perturb/guide-assignment-metrics.git
-          commit: e5131d6c85f832e400fdb6f98d630dc26ce8956e
+          commit: 59a0e1116be72929db10744e2c989db46db95c8e
         parameters:
-          - metric: ["kd", "strat_delta_kd"]
+          - metric: ["knockdown", "stratified_knockdown"]
     inputs:
       - guide_assignment.assignments
-      - data.gt_labels
+      - data.reference_labels
       - data.guide_map
       - data.spec
       - data.gex
@@ -167,24 +170,61 @@ stages:
   - id: metrics_discovery
     modules:
       - id: discovery_metric
-        name: "Discovery + FPR (HVG 5000; big resources)"
+        name: "Differential-expression discovery (FPR supplementary)"
         software_environment: assignment_metrics
         repository:
           url: https://github.com/tmp-perturb/guide-assignment-metrics.git
-          commit: e5131d6c85f832e400fdb6f98d630dc26ce8956e
+          commit: 59a0e1116be72929db10744e2c989db46db95c8e
         parameters:
-          - metric: ["discovery"]
+          - metric: ["differential_expression_discovery"]
         resources: { mem_mb: 180000, cpu: 8 }
     inputs:
       - guide_assignment.assignments
-      - data.gt_labels
+      - data.reference_labels
       - data.guide_map
       - data.spec
       - data.gex
     outputs:
       - { id: metrics_discovery.scores, path: "{params.metric}.scores.json" }
 
-# ---- cross-lineage aggregators (all verified 0-mismatch vs archive) ----
+  - id: metrics_resources
+    modules:
+      - id: method_resources
+        name: "Assignment resources under the fixed 8-core protocol"
+        software_environment: assignment_py
+        repository:
+          url: https://github.com/tmp-perturb/guide-assignment-metrics.git
+          commit: 59a0e1116be72929db10744e2c989db46db95c8e
+        parameters:
+          - metric: "method_resources"
+    inputs:
+      - guide_assignment.monitoring
+      - data.spec
+      - guide_assignment.assignments
+      - data.reference_labels
+      - data.guide_map
+    outputs:
+      - { id: metrics_resources.scores, path: "{params.metric}.scores.json" }
+
+  - id: metrics_supplementary
+    modules:
+      - id: supplementary_metrics
+        name: "Supplementary construct-level reference agreement"
+        software_environment: assignment_py
+        repository:
+          url: https://github.com/tmp-perturb/guide-assignment-metrics.git
+          commit: 59a0e1116be72929db10744e2c989db46db95c8e
+        parameters:
+          - metric: "construct_set_agreement"
+    inputs:
+      - guide_assignment.assignments
+      - data.reference_labels
+      - data.guide_map
+      - data.spec
+    outputs:
+      - { id: metrics_supplementary.scores, path: "{params.metric}.scores.json" }
+
+# ---- cross-lineage supplementary collectors and methodology-aware aggregation ----
 # NB `parameters[].id: collector_param` below is a required placeholder with no
 # semantics: OB auto-generates parameter ids for stages[].modules[].parameters but
 # NOT for metric_collectors[].parameters, while Parameter.id is mandatory. The value
@@ -192,78 +232,34 @@ stages:
 # repeat across collectors — the param hash is computed from the params, not the id.
 # Collector outputs land in out/<param_hash>/<file>, not at the bare `path:` below.
 metric_collectors:
-  - id: jaccard
-    name: "guide-assignment Jaccard across all lineages"
+  - id: pairwise_top1_agreement
+    name: "Pairwise Top-1 assignment agreement across configurations"
     software_environment: assignment_metrics
     repository:
       url: https://github.com/tmp-perturb/guide-assignment-metrics.git
-      commit: e5131d6c85f832e400fdb6f98d630dc26ce8956e
+      commit: 59a0e1116be72929db10744e2c989db46db95c8e
       entrypoint: collectors
     parameters:
       - id: collector_param
-        collector: "jaccard"
+        collector: "pairwise_top1_agreement"
     inputs:
       - guide_assignment.assignments
     outputs:
-      - { id: jaccard.json, path: "jaccard.json" }
-  - id: strat_jaccard
-    name: "Phase 1b: per-stratum pairwise Jaccard"
-    software_environment: assignment_metrics
-    repository:
-      url: https://github.com/tmp-perturb/guide-assignment-metrics.git
-      commit: e5131d6c85f832e400fdb6f98d630dc26ce8956e
-      entrypoint: collectors
-    parameters:
-      - id: collector_param
-        collector: "strat_jaccard"
-    inputs:
-      - guide_assignment.assignments
-      - data.difficulty_table
-    outputs:
-      - { id: strat_jaccard.json, path: "strat_jaccard.json" }
-  - id: extraction_shift
-    name: "Phase 1e: extraction shift (joins the two tools' difficulty tables)"
-    software_environment: assignment_metrics
-    repository:
-      url: https://github.com/tmp-perturb/guide-assignment-metrics.git
-      commit: e5131d6c85f832e400fdb6f98d630dc26ce8956e
-      entrypoint: collectors
-    parameters:
-      - id: collector_param
-        collector: "extraction_shift"
-    inputs:
-      - data.difficulty_table
-    outputs:
-      - { id: extraction_shift.json, path: "extraction_shift.json" }
-  - id: mismatch
-    name: "Phase 3: mismatch arbitration (union-NT across the 5 canonical methods)"
-    software_environment: assignment_metrics
-    repository:
-      url: https://github.com/tmp-perturb/guide-assignment-metrics.git
-      commit: e5131d6c85f832e400fdb6f98d630dc26ce8956e
-      entrypoint: collectors
-    parameters:
-      - id: collector_param
-        collector: "mismatch"
-    inputs:
-      - guide_assignment.assignments
-      - data.gex
-      - data.gt_labels
-      - data.guide_map
-      - data.gene_symbol_to_ensg
-    outputs:
-      - { id: mismatch.json, path: "mismatch.json" }
   - id: aggregate
-    name: "Aggregate all metric layers into one tidy table (metrics.tsv/.parquet)"
+    name: "Aggregate methodology main and supplementary metrics"
     software_environment: assignment_metrics
     repository:
       url: https://github.com/tmp-perturb/guide-assignment-metrics.git
-      commit: e5131d6c85f832e400fdb6f98d630dc26ce8956e
+      commit: 59a0e1116be72929db10744e2c989db46db95c8e
       entrypoint: aggregate
     inputs:
-      - metrics_gt.scores
+      - metrics_reference.scores
       - metrics_gex.scores
       - metrics_discovery.scores
+      - metrics_resources.scores
+      - metrics_supplementary.scores
     outputs:
-      - { id: aggregate.tsv, path: "metrics.tsv" }
-      - { id: aggregate.parquet, path: "metrics.parquet" }
+      - { id: aggregate.main_tsv, path: "main_metrics.tsv" }
+      - { id: aggregate.main_parquet, path: "main_metrics.parquet" }
+      - { id: aggregate.supplementary_tsv, path: "supplementary_metrics.tsv" }
+      - { id: aggregate.supplementary_parquet, path: "supplementary_metrics.parquet" }
