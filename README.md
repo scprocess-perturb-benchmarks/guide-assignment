@@ -32,6 +32,9 @@ personal software library is required. The fishash module vendors the exact
 benchmarked fishash 0.99.0 runtime source, and its concise Conda file declares
 the required R/Bioconductor packages.
 
+See `ENVIRONMENTS.md` for the environment and source-pinning policy shared with
+the guide-extraction and perturbation-status benchmarks.
+
 ## Run
 
 ```bash

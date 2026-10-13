@@ -1,6 +1,6 @@
 id: guide_assignment
 description: "Guide assignment benchmark: seven assignment configurations evaluated against published reference labels, with main and supplementary methodology-defined metrics."
-version: "0.2.1"
+version: "0.2.2"
 benchmarker: "Yunzhe Liu, richelieu.xmas@gmail.com"
 
 software_backend: conda

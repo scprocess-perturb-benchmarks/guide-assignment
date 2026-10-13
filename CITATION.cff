@@ -5,7 +5,7 @@ type: software
 authors:
   - family-names: Liu
     given-names: Yunzhe
-version: 0.2.1
-date-released: 2026-10-13
+version: 0.2.2
+date-released: 2026-10-14
 repository-code: "https://github.com/tmp-perturb/guide-assignment"
 license: MIT
