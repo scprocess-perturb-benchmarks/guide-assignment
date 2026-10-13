@@ -148,7 +148,7 @@ stages:
         software_environment: assignment_fishash
         repository:
           url: https://github.com/tmp-perturb/guide-assignment-fishash.git
-          commit: ce19026987109322f1d59390eb3d9a3d03d2b3d0
+          commit: 557f20d0bc472e3a4444f503c6b7e88858a8ad38
         parameters:
           - padj_cutoff: 0.05
             min_count: 2
