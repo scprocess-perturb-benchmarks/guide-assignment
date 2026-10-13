@@ -1,6 +1,6 @@
 id: guide_assignment
 description: "Guide assignment benchmark: seven assignment configurations evaluated against published reference labels, with main and supplementary methodology-defined metrics."
-version: "0.2.0"
+version: "0.2.1"
 benchmarker: "Yunzhe Liu, richelieu.xmas@gmail.com"
 
 software_backend: conda
@@ -12,7 +12,7 @@ software_environments:
     description: "crispat SVI (pgmm/2beta). Exported from the crispat env."
     conda: envs/assignment_crispat.yml
   assignment_fishash:
-    description: "fishash (R). Exported from scprocess_rlibs."
+    description: "fishash 0.99.0 (R); pinned source is vendored in the method module."
     conda: envs/assignment_fishash.yml
   assignment_metrics:
     description: "GEX metrics + difficulty. Same stack as assignment_py."
@@ -21,8 +21,7 @@ software_environments:
 stages:
   # ============================ data ============================
   # Primary benchmark: Replogle K562, two guide extractions.  The reference-label
-  # terminology is intentional: it describes agreement with a published reference,
-  # rather than claiming experimental ground truth.
+  # terminology is intentional: agreement is measured against published labels.
   - id: data
     modules:
       - id: replogle_ham
@@ -149,7 +148,7 @@ stages:
         software_environment: assignment_fishash
         repository:
           url: https://github.com/tmp-perturb/guide-assignment-fishash.git
-          commit: e92fcff0699e4b84e0c133714ef632e75e0b4afa
+          commit: ce19026987109322f1d59390eb3d9a3d03d2b3d0
         parameters:
           - padj_cutoff: 0.05
             min_count: 2

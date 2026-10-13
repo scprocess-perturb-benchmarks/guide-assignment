@@ -1,13 +1,14 @@
 # guide-assignment
 
-Omnibenchmark for Perturb-seq **guide assignment**: 8 methods evaluated against a
-tiered set of metrics (ground-truth accuracy, knockdown / discovery, construct-set,
-mismatch) plus cell-level difficulty stratification.
+Omnibenchmark for Perturb-seq **guide assignment**: assignment configurations
+evaluated by reference agreement, transcriptomic agreement, discovery,
+computational-resource and supplementary analyses.
 
 ```
-data ─► guide_assignment (8 methods) ─► metrics_gt / metrics_gex / metrics_discovery
- │                                       + collectors: jaccard, strat_jaccard, extraction_shift, mismatch
- └── data.difficulty_table (per-cell, method-independent)
+data ─► guide_assignment ─► metrics_reference / metrics_gex / metrics_discovery
+│                              + metrics_resources / metrics_supplementary
+│                              + cross-method collectors and aggregation
+└── data.difficulty_table (per-cell, method-independent)
 ```
 
 ## Repositories
@@ -21,6 +22,15 @@ data ─► guide_assignment (8 methods) ─► metrics_gt / metrics_gex / metri
 | [guide-assignment-crispat](https://github.com/tmp-perturb/guide-assignment-crispat) | crispat |
 | [guide-assignment-fishash](https://github.com/tmp-perturb/guide-assignment-fishash) | fishash (R) |
 | [guide-assignment-metrics](https://github.com/tmp-perturb/guide-assignment-metrics) | metrics + difficulty + collectors |
+
+## Software environments
+
+The benchmark uses the native Omnibenchmark `conda` backend. Environment YAML
+files are versioned under `envs/` and selected through `software_environment`.
+Method repositories contain their execution code; no external `project_root` or
+personal software library is required. The fishash module vendors the exact
+benchmarked fishash 0.99.0 runtime source, and its concise Conda file declares
+the required R/Bioconductor packages.
 
 ## Run
 

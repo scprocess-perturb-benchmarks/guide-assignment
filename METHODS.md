@@ -1,49 +1,47 @@
-# Methods & Metrics — guide_assignment
+# Methods and metrics — guide assignment
 
-Condensed reference. Full algorithmic detail:
-`/data/yunzliu/assignment_benchmark_starter/METHODOLOGY_ASSIGNMENT_ALGORITHMS.md`.
+This document describes the public Omnibenchmark implementation. The benchmark
+uses published assignment labels as references and reports **reference
+agreement**. Legacy tier terminology is not used.
 
-## Assignment methods (module → lineages)
+## Assignment configurations
 
-| Module | Lineages (`parameters`) | Vendored script | Sort key | Notes |
-|---|---|---|---|---|
-| `pgmm` | `variant: mle` / `map_e2` | `run_pgmm_em.py` / `run_variant_e2.py --e2-prior` | UMI DESC | 2-comp Poisson-Gaussian EM; UMI≥1 + P(Gauss)≥0.75 gate. Seeded ⇒ deterministic. E2 = MAP prior; base 6-col output (LPO layer dropped — falsified). |
-| `umi` | `threshold: 3/5/10` | `run_umi_threshold.py` | UMI DESC | Parameter-free baseline; precision–recall frontier. Deterministic. |
-| `crispat` | `crispat_method: pgmm/2beta` | `run_crispat_pgmm.py` / `run_crispat_2beta.py` (+`mex_to_h5ad.py`) | UMI / percent_counts DESC | Pyro SVI. MEX→h5ad done inside the module. **Stochastic** — parity via pinned env + seed (see CONSISTENCY_VALIDATION). |
-| `fishash` | fixed | `run_fishash.R` | log_pval ASC | One-sided Fisher exact + GS-FDR 5% + Simpson refit×10 (R). Deterministic. |
-
-All modules consume the MEX trio (`data.matrix/barcodes/features`), present it to the
-vendored script as `merged_{matrix,barcodes,features}`, and emit `assignments.csv`
-with each method's native columns (so the archived md5 pins hold).
-
-## Metrics (metric selection via `--metric`)
-
-Idiomatic Omnibenchmark: each metric value is its own node/output, **not** a
-monolithic scorer (matches the official clustering example). Modules split only
-where (env, input-shape) differ.
-
-| `--metric` | Vendored logic | Inputs | State |
+| Module | Configurations | Output ranking | Implementation |
 |---|---|---|---|
-| `tier1` | `benchmark_assignments.py` (`compute_metrics`, dual) / `benchmark_papalexi_tier1.py` (single) | assignments + GT + guide_map + spec | ✅ dual verified; single = Cut 3 |
-| `construct_set` | `construct_level_eval.py` (dual only) | assignments + guide_map + spec | ⏳ Cut 2 |
-| `kd` / `discovery` / `mismatch` | `benchmark_kd_efficiency.py` / `phase2_discovery.py` / `analyze_mismatch.py` | + `data.gex` | ⏳ Cut 2 (GEX env) |
-| `strat_tier1` / `strat_mismatch_loc` / `capacity` | difficulty Phase 1A/1C/3 | + `difficulty.table` | ⏳ Cut 3 |
+| `pgmm` | MAP-EM (`map_e2`) | UMI count | Pinned Python module |
+| `umi` | thresholds 3, 5 and 10 | UMI count | Pinned Python module |
+| `crispat` | PGMM and 2-beta | native method score | Pinned Python module |
+| `fishash` | GS-FDR 0.05, minimum count 2, refit 10 | log-p value | Vendored fishash 0.99.0 source at upstream commit `74220e8` |
 
-The Tier-1 loader **auto-detects the CSV schema** (percent_counts→2beta,
-log_pval→fishash, prob_gaussian→pgmm, else UMI) to pick the exact per-method sort
-the original used — so the metric needs no cross-stage knowledge of the method, and
-reproduces archived values field-for-field.
+All configurations consume the same MEX matrix, barcode and feature artifacts
+for a dataset lineage. Each emits `assignments.csv` and `monitoring.json` through
+the standard Omnibenchmark module interface.
 
-### Dataset semantics (`data.spec`)
+## Metric stages
 
-The importer emits `{dataset}_spec.json` = `{guide_design, match_regime,
-collapse_lanes, has_gex}`. Metrics read it — dual vs single Tier-1, and the barcode
-matching regime: Replogle `(lane,16mer)` over 48 real lanes (never collapse),
-Papalexi bare-16mer (8 pools folded to L01, ceiling 20,441). Methods stay
-dataset-agnostic.
+| Stage | Metric selector(s) | Purpose |
+|---|---|---|
+| `metrics_reference` | `reference_agreement`, `stratified_reference_agreement` | Cell- and label-level agreement with the published reference, including difficulty-stratified supplementary analysis |
+| `metrics_gex` | `knockdown`, `stratified_knockdown` | Target-expression agreement and its difficulty-stratified supplementary analysis |
+| `metrics_discovery` | `differential_expression_discovery` | Across-perturbation discovery analysis and supplementary false-positive diagnostics |
+| `metrics_resources` | `method_resources` | Runtime and memory summaries under the fixed execution protocol |
+| `metrics_supplementary` | `construct_set_agreement` | Construct-level reference agreement |
 
-## Cross-lineage aggregation (collectors)
+The pairwise collector computes Top-1 agreement between assignment
+configurations. The aggregate collector emits separate main and supplementary
+TSV and Parquet tables.
 
-The `collectors` entrypoint of `guide_assignment_metrics`: `jaccard` (all lineages; per-cell
-aggregation — the fixed 2026-08-05 behaviour), `strat_jaccard` (Phase 1B),
-`extraction_shift` (Phase 1E, joins the two extractions' difficulty tables).
+## Dataset semantics
+
+The data module emits a dataset specification describing guide design, barcode
+matching, lane collapsing, perturbation type and GEX availability. Metric
+modules consume that specification instead of relying on machine-local project
+configuration. Replogle includes HAM and simpleaf extraction lineages;
+Papalexi 2021 and Norman 2019 are supplementary dataset lineages.
+
+## Software
+
+The plan uses the Omnibenchmark `conda` backend with environment YAML files
+under `envs/`. Module repositories contain all execution code. Aside from the
+explicit dataset paths in the data stage, execution has no external
+`project_root` or personal library dependency.
