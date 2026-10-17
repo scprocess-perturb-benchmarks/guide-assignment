@@ -29,10 +29,10 @@ stages:
         software_environment: assignment_py
         repository:
           url: https://github.com/tmp-perturb/guide-assignment-data.git
-          commit: 950362e0ebb4f67509eab8e12e4d82932b4ef01e
+          commit: b52633b980822956e8adf69af60057661e950411
         parameters:
           - mex_dir: "/data/yunzliu/results/guide_extraction/hash_matcher_final/merged/"
-            reference: "/data/yunzliu/references/published/K562_essential_raw_singlecell_01.h5ad"
+            reference: "https://plus.figshare.com/ndownloader/files/35773219"
             gex: "/data/yunzliu/Replogle2022_K562_Day6_benchmark/02_gex/post_decontx/TruSeq_decontx_merged_48lanes.h5ad"
             guide_map: "/data/yunzliu/references/raw_guides_k562_essential.csv"
             gene_symbol_to_ensg: "/data/yunzliu/assignment_benchmark_starter/benchmark_output/gene_symbol_to_ensg.json"
@@ -46,10 +46,10 @@ stages:
         software_environment: assignment_py
         repository:
           url: https://github.com/tmp-perturb/guide-assignment-data.git
-          commit: 950362e0ebb4f67509eab8e12e4d82932b4ef01e
+          commit: b52633b980822956e8adf69af60057661e950411
         parameters:
           - mex_dir: "/data/yunzliu/assignment_benchmark_starter/04_extraction_mex/simpleaf_k15/"
-            reference: "/data/yunzliu/references/published/K562_essential_raw_singlecell_01.h5ad"
+            reference: "https://plus.figshare.com/ndownloader/files/35773219"
             gex: "/data/yunzliu/Replogle2022_K562_Day6_benchmark/02_gex/post_decontx/TruSeq_decontx_merged_48lanes.h5ad"
             guide_map: "/data/yunzliu/references/raw_guides_k562_essential.csv"
             gene_symbol_to_ensg: "/data/yunzliu/assignment_benchmark_starter/benchmark_output/gene_symbol_to_ensg.json"
@@ -64,7 +64,7 @@ stages:
         software_environment: assignment_py
         repository:
           url: https://github.com/tmp-perturb/guide-assignment-data.git
-          commit: 950362e0ebb4f67509eab8e12e4d82932b4ef01e
+          commit: b52633b980822956e8adf69af60057661e950411
         parameters:
           - mex_dir: "/data/yunzliu/results/guide_extraction/papalexi_2021/simpleaf/merged/"
             reference: "/data/yunzliu/papalexi_2021_benchmark/01_reference/papalexi_2021_assignment.csv"
@@ -81,10 +81,10 @@ stages:
         software_environment: assignment_py
         repository:
           url: https://github.com/tmp-perturb/guide-assignment-data.git
-          commit: 950362e0ebb4f67509eab8e12e4d82932b4ef01e
+          commit: b52633b980822956e8adf69af60057661e950411
         parameters:
           - mex_dir: "/data/yunzliu/norman_2019/extraction/simpleaf/merged/"
-            reference: "/data/yunzliu/norman_2019/expression_matrix/geo/GSE133344_filtered_cell_identities.csv.gz"
+            reference: "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE133nnn/GSE133344/suppl/GSE133344_filtered_cell_identities.csv.gz"
             gex: "/data/yunzliu/norman_2019/expression_matrix/pertpy/norman_2019_pertpy.h5ad"
             gex_matrix: "/data/yunzliu/norman_2019/expression_matrix/geo/GSE133344_filtered_matrix.mtx.gz"
             gex_barcodes: "/data/yunzliu/norman_2019/expression_matrix/geo/GSE133344_filtered_barcodes.tsv.gz"
