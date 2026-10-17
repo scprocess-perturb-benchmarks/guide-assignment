@@ -28,7 +28,7 @@ stages:
         name: "Replogle K562 / HAM"
         software_environment: assignment_py
         repository:
-          url: https://github.com/tmp-perturb/guide-assignment-data.git
+          url: https://github.com/scprocess-perturb-benchmarks/guide-assignment-data.git
           commit: b52633b980822956e8adf69af60057661e950411
         parameters:
           - mex_dir: "/data/yunzliu/results/guide_extraction/hash_matcher_final/merged/"
@@ -45,7 +45,7 @@ stages:
         name: "Replogle K562 / simpleaf_k15"
         software_environment: assignment_py
         repository:
-          url: https://github.com/tmp-perturb/guide-assignment-data.git
+          url: https://github.com/scprocess-perturb-benchmarks/guide-assignment-data.git
           commit: b52633b980822956e8adf69af60057661e950411
         parameters:
           - mex_dir: "/data/yunzliu/assignment_benchmark_starter/04_extraction_mex/simpleaf_k15/"
@@ -63,7 +63,7 @@ stages:
         name: "Papalexi 2021 / simpleaf (supplementary)"
         software_environment: assignment_py
         repository:
-          url: https://github.com/tmp-perturb/guide-assignment-data.git
+          url: https://github.com/scprocess-perturb-benchmarks/guide-assignment-data.git
           commit: b52633b980822956e8adf69af60057661e950411
         parameters:
           - mex_dir: "/data/yunzliu/results/guide_extraction/papalexi_2021/simpleaf/merged/"
@@ -80,7 +80,7 @@ stages:
         name: "Norman 2019 / simpleaf (supplementary)"
         software_environment: assignment_py
         repository:
-          url: https://github.com/tmp-perturb/guide-assignment-data.git
+          url: https://github.com/scprocess-perturb-benchmarks/guide-assignment-data.git
           commit: b52633b980822956e8adf69af60057661e950411
         parameters:
           - mex_dir: "/data/yunzliu/norman_2019/extraction/simpleaf/merged/"
@@ -117,7 +117,7 @@ stages:
         name: "PGMM_EM (MAP-EM)"
         software_environment: assignment_py
         repository:
-          url: https://github.com/tmp-perturb/guide-assignment-pgmm.git
+          url: https://github.com/scprocess-perturb-benchmarks/guide-assignment-pgmm.git
           commit: be85a69a1082b143dba2f810109716fd2da5d9d1
         parameters:
           - variant: "map_e2"
@@ -128,7 +128,7 @@ stages:
         name: "UMI threshold (t3/t5/t10)"
         software_environment: assignment_py
         repository:
-          url: https://github.com/tmp-perturb/guide-assignment-umi.git
+          url: https://github.com/scprocess-perturb-benchmarks/guide-assignment-umi.git
           commit: ac6a2a84d73cf9295e9d8822fd36549f959d9bc7
         parameters:
           - threshold: [3, 5, 10]
@@ -137,7 +137,7 @@ stages:
         name: "crispat (pgmm / 2beta)"
         software_environment: assignment_crispat
         repository:
-          url: https://github.com/tmp-perturb/guide-assignment-crispat.git
+          url: https://github.com/scprocess-perturb-benchmarks/guide-assignment-crispat.git
           commit: 6eb4c6ba5ffef4835666ae7056685af3d46cd300
         parameters:
           - crispat_method: ["pgmm", "2beta"]
@@ -147,7 +147,7 @@ stages:
         name: "fishash (R)"
         software_environment: assignment_fishash
         repository:
-          url: https://github.com/tmp-perturb/guide-assignment-fishash.git
+          url: https://github.com/scprocess-perturb-benchmarks/guide-assignment-fishash.git
           commit: 557f20d0bc472e3a4444f503c6b7e88858a8ad38
         parameters:
           - padj_cutoff: 0.05
@@ -172,7 +172,7 @@ stages:
         name: "Reference agreement and difficulty-stratified agreement"
         software_environment: assignment_py
         repository:
-          url: https://github.com/tmp-perturb/guide-assignment-metrics.git
+          url: https://github.com/scprocess-perturb-benchmarks/guide-assignment-metrics.git
           commit: 767ccc5d356593b8caed840e6e780bcc5f30fb4b
         parameters:
           - metric: ["reference_agreement", "stratified_reference_agreement"]
@@ -192,7 +192,7 @@ stages:
         name: "Knockdown and difficulty-stratified knockdown"
         software_environment: assignment_metrics
         repository:
-          url: https://github.com/tmp-perturb/guide-assignment-metrics.git
+          url: https://github.com/scprocess-perturb-benchmarks/guide-assignment-metrics.git
           commit: 767ccc5d356593b8caed840e6e780bcc5f30fb4b
         parameters:
           - metric: ["knockdown", "stratified_knockdown"]
@@ -213,7 +213,7 @@ stages:
         name: "Differential-expression discovery (FPR supplementary)"
         software_environment: assignment_metrics
         repository:
-          url: https://github.com/tmp-perturb/guide-assignment-metrics.git
+          url: https://github.com/scprocess-perturb-benchmarks/guide-assignment-metrics.git
           commit: 767ccc5d356593b8caed840e6e780bcc5f30fb4b
         parameters:
           - metric: ["differential_expression_discovery"]
@@ -234,7 +234,7 @@ stages:
         name: "Assignment resources under the fixed 8-core protocol"
         software_environment: assignment_py
         repository:
-          url: https://github.com/tmp-perturb/guide-assignment-metrics.git
+          url: https://github.com/scprocess-perturb-benchmarks/guide-assignment-metrics.git
           commit: 767ccc5d356593b8caed840e6e780bcc5f30fb4b
         parameters:
           - metric: "method_resources"
@@ -253,7 +253,7 @@ stages:
         name: "Supplementary construct-level reference agreement"
         software_environment: assignment_py
         repository:
-          url: https://github.com/tmp-perturb/guide-assignment-metrics.git
+          url: https://github.com/scprocess-perturb-benchmarks/guide-assignment-metrics.git
           commit: 767ccc5d356593b8caed840e6e780bcc5f30fb4b
         parameters:
           - metric: "construct_set_agreement"
@@ -277,7 +277,7 @@ metric_collectors:
     name: "Pairwise Top-1 assignment agreement across configurations"
     software_environment: assignment_metrics
     repository:
-      url: https://github.com/tmp-perturb/guide-assignment-metrics.git
+      url: https://github.com/scprocess-perturb-benchmarks/guide-assignment-metrics.git
       commit: 767ccc5d356593b8caed840e6e780bcc5f30fb4b
       entrypoint: collectors
     parameters:
@@ -290,7 +290,7 @@ metric_collectors:
     name: "Aggregate methodology main and supplementary metrics"
     software_environment: assignment_metrics
     repository:
-      url: https://github.com/tmp-perturb/guide-assignment-metrics.git
+      url: https://github.com/scprocess-perturb-benchmarks/guide-assignment-metrics.git
       commit: 767ccc5d356593b8caed840e6e780bcc5f30fb4b
       entrypoint: aggregate
     inputs:

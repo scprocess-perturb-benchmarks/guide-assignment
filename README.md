@@ -15,13 +15,13 @@ data ─► guide_assignment ─► metrics_reference / metrics_gex / metrics_di
 
 | Repo | Role |
 |---|---|
-| [guide-assignment](https://github.com/tmp-perturb/guide-assignment) | benchmark plan + docs |
-| [guide-assignment-data](https://github.com/tmp-perturb/guide-assignment-data) | data importer + difficulty table |
-| [guide-assignment-pgmm](https://github.com/tmp-perturb/guide-assignment-pgmm) | PGMM-EM |
-| [guide-assignment-umi](https://github.com/tmp-perturb/guide-assignment-umi) | UMI threshold |
-| [guide-assignment-crispat](https://github.com/tmp-perturb/guide-assignment-crispat) | crispat |
-| [guide-assignment-fishash](https://github.com/tmp-perturb/guide-assignment-fishash) | fishash (R) |
-| [guide-assignment-metrics](https://github.com/tmp-perturb/guide-assignment-metrics) | metrics + difficulty + collectors |
+| [guide-assignment](https://github.com/scprocess-perturb-benchmarks/guide-assignment) | benchmark plan + docs |
+| [guide-assignment-data](https://github.com/scprocess-perturb-benchmarks/guide-assignment-data) | data importer + difficulty table |
+| [guide-assignment-pgmm](https://github.com/scprocess-perturb-benchmarks/guide-assignment-pgmm) | PGMM-EM |
+| [guide-assignment-umi](https://github.com/scprocess-perturb-benchmarks/guide-assignment-umi) | UMI threshold |
+| [guide-assignment-crispat](https://github.com/scprocess-perturb-benchmarks/guide-assignment-crispat) | crispat |
+| [guide-assignment-fishash](https://github.com/scprocess-perturb-benchmarks/guide-assignment-fishash) | fishash (R) |
+| [guide-assignment-metrics](https://github.com/scprocess-perturb-benchmarks/guide-assignment-metrics) | metrics + difficulty + collectors |
 
 ## Software environments
 

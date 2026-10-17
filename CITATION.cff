@@ -7,5 +7,5 @@ authors:
     given-names: Yunzhe
 version: 0.2.2
 date-released: 2026-10-14
-repository-code: "https://github.com/tmp-perturb/guide-assignment"
+repository-code: "https://github.com/scprocess-perturb-benchmarks/guide-assignment"
 license: MIT
